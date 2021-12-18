@@ -1,0 +1,3 @@
+Google Cloud Platform: https://console.cloud.google.com/marketplace/browse?filter=solution-type:dataset
+
+The Met Public Domain Art Works: https://www.metmuseum.org/about-the-met/policies-and-documents/image-resources

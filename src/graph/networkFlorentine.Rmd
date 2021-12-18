@@ -1,0 +1,266 @@
+---
+title: "Network Assignment"
+author: "Dr. Samantha Ajovalasit"
+output: html_document
+---
+### Here you can find some datasets on network
+
+#### https://icon.colorado.edu/#!/networks
+
+#### https://snap.stanford.edu/data/
+
+#### http://konect.cc/
+
+
+
+### 0) Clean all data from enivornment and load the igraph library
+
+```{r}
+rm(list = ls())
+library(igraph)
+```
+
+## 1) Unzip the network.csv.zip file, then load the Dolphin Social Network*
+
+*D. Lusseau et al., "The bottlenose dolphin community of Doubtful Sound features a large proportion of long-lasting associations."  Behavioral Ecology and Sociobiology 54(4), 396-405 (2003)., https://doi.org/10.1007/s00265-003-0651-y [@sci-hub]
+
+### 1.1) load the file "edges.csv" as dataframe and then as graph, load also the nodes as undirected graph
+
+```{r eval=F}
+library(igraph)
+g1 <- read.csv('dolphin/edges.csv')
+g1 <- graph_from_data_frame(g1, directed = F)
+g1.nodes <- read.csv('dolphin/nodes.csv')
+
+g1 <- graph_from_data_frame(g1, directed = F,vertices = g1.nodes)
+class(g1)
+```
+
+
+
+###  2) Plot and Save the graph as is, be free to select the format 
+
+```{r eval=F}
+plot(g1, edge.size=0.00002)
+write_graph(g1, 'data/graph/dolphin/dolphin2.gml', format = 'gml')
+```
+
+
+#####  2.1) Load the previous graph 
+
+```{r eval= F}
+g2 <- read_graph('data/graph/dolphin/dolphin2.gml',format = 'gml')
+plot(g2)
+```
+
+
+###  3) Load the florentine families graph and assign as g1
+####     You need the library netrank
+
+```{r}
+library('netrankr')
+data("florentine_m")
+g1 <- (florentine_m)
+```
+###  3.1) Save florentine families' graph in gml format
+
+```{r eval=F}
+write_graph(g1,'data/graph/florentinefamilies.gml', format = 'gml')
+```
+
+###   4) Get all simple information from the graph, number of vertices and edges
+```{r eval=F}
+str(g1)
+```
+```{r}
+vcount(g1)
+ecount(g1)
+gsize(g1)
+```
+
+###   5) Check if the graph is connected
+
+connected means that any two vertices are reachable from each other with a 
+multihop path i.e. not isolated vertices
+```{r}
+is.connected(g1)
+plot(g1)
+```
+
+###   6) delete Florentine families with a Null degree and check if is connected
+
+```{r, eval=F}
+g1.conn <- delete_vertices(g1, which(degree(g1)==0))
+g1.conn
+is.connected(g1.conn)
+plot(g1.conn)
+```
+
+
+###   7) Plot the graph of florentine families
+####  plot size of vertices by wealth of family, then color the label of vertex in black then color the vertex in white (note that wealth is 1)
+
+```{r}
+plot(g1, vertex.size= degree(g1)*2)
+plot(g1, vertex.size= V(g1)$wealth*0.4,
+     vertex.color='red')
+```
+
+###   8) plot with a different layout
+```{r}
+
+#help('layout_')
+
+lay1 <- layout_(g1, as_tree())
+lay2 <- layout_(g1, in_circle())
+```
+Plot with the two layouts
+```{r}
+plot(g1, vertex.size= V(g1)$wealth*0.3,
+     vertex.color='red', layout=lay1)
+plot(g1, vertex.size= V(g1)$wealth*0.3,
+     vertex.color='red', layout=lay2)
+```
+
+
+###  9)Get the Diameter of a graph
+The diameter of a graph is the length of the longest geodesic path. 
+
+```{r}
+diameter(g1, directed = F)
+diam <- get_diameter(g1, directed=F)
+diam
+```
+
+### 10) Get the degree of the graph and plot the graph based the value of the degree
+##### Plot the histogram
+
+DEGREE OF A NODE depends if we have a directed or undirected graph if we have a directed one the in degree and the out degree (edges out of vertex) are often different, while if undirected we have bidirectional edges and then they are equal.
+
+High degree nodes attract a lot of connections. They are hubs, very important for the functioning of the network killing high degree nodes may be much more serious than killing low degree nodes
+```{r}
+deg <- degree(g1, mode='all')
+deg
+hist(deg+1, xlim=c(0,8), main= 'Histogram of the degree') 
+V(g1)$degs <- deg
+```
+
+Plot the graph based on the degree of each vertex
+```{r}
+V(g1)$deg
+plot.igraph(g1, vertex.size=V(g1)$degs*10, 
+            vertex.label.cex=V(g1)$wealth*0.0075, 
+            vertex.label.color="black",
+            vertex.frame.color="gray")
+```
+
+
+Plot based on degree distribution
+
+```{r}
+deg.dist <- degree_distribution(g1, cumulative=T, mode="all")
+plot( x=0:max(deg), y=1-deg.dist, pch=19, cex=1.2, col="orange", xlab="Degree", ylab="Cumulative Frequency")
+```
+
+
+#    12) Calculate the average path length of the graph and all possible distances
+
+```{r}
+mean_distance(g1, directed=F)
+
+distances(g1)
+```
+
+
+#    13) Calculate some basic centrality measures of the graph
+
+
+#    14) Calculate Eigenvector centrality measure and plot it in a proper way with proper color
+#        set the maximum four digits
+
+Eigenvector centrality measures is similar to the concept of the google page rank it assigns to a vertex the importance score proportional to the importance score of its neighbor
+
+```{r}
+options(digits=4)
+eigencen = eigen_centrality(g1)$vector
+sort(eigencen, decreasing = T)
+```
+
+Cut identifies the corresponding bin for each score
+```{r}
+bins <- unique(quantile(eigencen, seq(0,1,length.out=30)))
+vals <- cut(eigencen, bins, labels=FALSE, include.lowest=TRUE)
+length(vals); head(vals)
+```
+then we will assignt the color of each bin to a variable
+
+```{r}
+my_col = heat.colors(length(bins))
+head(my_col)
+colorVals <- rev(my_col)[vals]
+V(g1)$color <- colorVals
+V(g1)$eign <- eigencen
+```
+
+
+```{r}
+set.seed(1)
+plot.igraph(g1, vertex.size=V(g1)$eign*30, 
+            vertex.label.cex=V(g1)$wealth*0.0075, 
+            vertex.label.color="black",
+            vertex.frame.color="gray")
+
+subgraph = subgraph_centrality(g1)
+```
+
+
+#    15) Calculate Betweenness centrality measure, find its correlation with the eigenvector centrality
+Plot it properly.
+
+The `betwenness centrality` says how much paths between any other nodes go trough that node.
+
+This idea is based #in part, on a seminal #paper by Mark Granovetter called `"The strength of weak ties"` in which
+it was shown that most job seekers (who participated in the study) found their ultimate employment through a weak tie, that is, through an acquaintance, rather than a strong tie or a close friend.
+
+```{r}
+betwenness = betweenness(g1)
+
+sort(betwenness,decreasing=TRUE)[1:10]
+
+cor(betwenness,eigencen)
+
+```
+
+Plot based on betwenness
+
+```{r}
+bins <- unique(quantile(betwenness, seq(0,1,length.out=30)))
+vals <- cut(betwenness, bins, labels=FALSE, include.lowest=TRUE)
+
+colorVals <- rev(terrain.colors(length(bins)))[vals]
+V(g1)$color <- colorVals
+set.seed(1)
+plot.igraph(g1, vertex.size=V(g1)$wealth/10, 
+            vertex.label.cex=V(g1)$wealth*0.0075, 
+            vertex.label.color="black")
+```
+
+
+#    16) Calculate the Edge Betweenness centrality measure it is basically a clustering measure and plot it
+
+`Its a clustering measure`. The measure helps to find the `community`, and isolate them,
+
+```{r}
+w <- edge.betweenness.community(g1)
+sort(table(w$membership))
+
+V(g1)$color <- rep("white", length(w$membership))
+keepTheseCommunities <- names(sizes(w))[sizes(w) > 3]
+matchIndex <- match(w$membership, keepTheseCommunities) # like %in%
+colorVals <- rainbow(5)[matchIndex[!is.na(matchIndex)]]
+V(g1)$color[!is.na(matchIndex)] <- colorVals
+
+
+plot.igraph(g1, vertex.size=5,vertex.label.cex=1)
+```
+

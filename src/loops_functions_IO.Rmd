@@ -1,0 +1,594 @@
+---
+title: Loop and Functions
+output: html_document
+author: Dr. Samantha Ajovalasit
+---
+### 
+## CONDITIONAL INSTRUCTIONS
+
+
+### IF CLAUSE 
+Schema
+```{r}
+## if (condition is true){
+##        then do this
+##}
+```
+
+Note: curly brackets are needed for instructions which are written on more than one line, but I suggest to use always these brackets. 
+
+Now set up two variable `x = 6` and `y=2`. We want to set up a condition that returns
+the sum if `x<y`
+
+```{r}
+x<-6
+y<-2
+if(x<=y) {
+  res<-x+y
+  } 
+```
+
+if x is less than or equal to y then add them to get xy condition is not true so nothing happens
+```{r eval=F}
+res
+## Error: Object "xy" not found
+
+```
+
+The reverse relational holds and then results is printed out
+```{r}
+if(x>=y) res<-x+y
+res
+```
+
+### ELSE CLAUSE
+
+The schema is
+```{r}
+## (B) 
+## if (condition is true)
+##        {then do this}
+## else
+##        {do this}
+```
+
+```{r}
+
+if(x<=y){
+  print("x is less or equal than y")
+}else{
+  print("x is greater than y: create res")
+  res <- x+y
+}
+res
+```
+
+
+## LOOPS
+### A).WHILE LOOP 
+The while loop works with the following schema
+```{r}
+#  while (condition controlling flow is true) 
+#    {perform task}
+```
+
+
+Set up an initial condition
+```{r}
+x<-0
+```
+
+
+Enter the while loop
+
+**while example 1**
+```{r}
+while(x<=5){
+  #condition is set x less equal 5  
+  x<-x+1
+  #updating variable condition
+  y <-(x)
+  #when condition is not anymore verified then exit from loop
+}
+y
+```
+
+
+**while example 2**
+```{r}
+
+i <- 1 #initial condition
+while (i < 6) {
+  print(i) #this gonna print i 5 times, updated by one
+  i = i+1
+}
+
+```
+
+
+**while example 3**
+```{r eval=F}
+#set up initial condition
+count <- -10
+while(count < 10) {
+  print(count) #this will print count from initial condition up to final condition set in while statement
+  count <- count + 1 #updating condition
+}
+```
+
+
+**while example 4**
+let modify the updating condition
+```{r eval=F}
+count <- -10
+while(count < 10) {
+  print(count)
+  count <- count - 1
+}
+
+```
+
+
+
+### B). FOR loops
+
+```{r}
+## for (i in start:finish)
+##        {execute task}
+```
+Create a dataframe of 4 column and 10 rows with numbers draw from normal distribution
+```{r}
+
+df <- data.frame("a"=rnorm(10),
+                 "b"=rnorm(10),
+                 "c"=rnorm(10),
+                 "d"=rnorm(10))
+#df
+
+```
+
+Create a blank vector of double (numerical numbers)
+```{r}
+output <- vector("double", ncol(df))  # 1. output
+```
+
+
+**for loop example 1 **
+```{r}
+for (i in seq_along(df)) {            # 2. sequence
+  output[[i]] <- median(df[[i]])      # 3. body
+}
+output
+```
+
+
+**for loop example 2**
+You can loop also in this way
+```{r}
+for (i in 1:ncol(df)) {            # 2. sequence
+  output[[i]] <- median(df[[i]])      # 3. body
+}
+output
+```
+
+
+**for loop example 3**
+```{r}
+y = array() #create a blank array
+for(i in 1:10){#looping condition in a sequence
+  y[i]<-i #add to the blank array indexing by i the number of the seq 1:10
+}
+y
+```
+
+**for loop example 3**
+```{r}
+
+x <- c(2,5,3,9,8,11,6)
+count <- 0
+for (val in x) {
+  if(val %% 2 == 0)  count = count+1
+}
+count
+```
+
+
+**for loop example 4: nested loop**
+```{r}
+
+#create an empty matrix
+z<-matrix(nrow=2,ncol=4)
+z
+for(i in 1:2){
+  for(j in 1:4){
+    z[i,j]<-i+j #you assign to each row i, col j element the value which sum 
+    #the row and col of that element, 
+    #the element 1,1 is 2 the 1,2 is 3 etc etc
+  }}
+z
+```
+
+Note: you can always nest `loops` and `conditions` just... using brackets!
+
+### D).BREAK a loop
+
+`Break`, breaks out of a for, while or repeat loop. The control is transferred to the first statement outside the inner-most loop
+
+**break loop example 1**
+
+```{r}
+for(i in 1:100) {
+  print(i)
+  
+  if(i > 3) {
+    ## Stop loop after 3 iterations
+    break  
+  }		
+}
+```
+
+**break loop example 1**
+
+```{r}
+count <- -10
+while(count < 10) {
+  print(count)
+  count <- count + 1
+  if (count==4){
+    break
+  }
+}
+```
+
+## Functions
+Functions are routine that you can write and call to run algoriths. Your own functions have the same properties of all R functions:
+
+`##Some useful functions:`
+```{r, eval=F}
+x=rnorm(1)
+sqrt(x)                Square root of x
+abs(x)                 Absolute value
+exp(x)                 Exponential
+log(x)                 Natural logarithm
+log10(x)               Base 10 logarithm
+ceiling(x)             Closest integer not less than x
+floor(x)               Closest integer not greater x
+round(x)               Closest integer to the elemen`
+```
+
+
+
+The schema is the following
+```{r}
+## functionName<-function(arg1, arg2,..., arg n){
+##        do this using arg1 and arg2 ... arg n
+##      }
+```
+
+
+Note: `arg1` is a local variable, it exits within the function 
+
+It is possible specify many arguments, but not all of them are needed or will be used inside the function (LAZY EVALUATION)
+
+**function example 1**
+```{r}
+f <- function(a, b = 1, c = 2, d = NULL) {
+  return(a+b+d)
+}
+
+f(1,2,2,1)
+
+f(a=2, b=4, d=2)
+
+f(a=4, d=2)
+```
+
+
+**function example 2**
+```{r}
+f <- function(a, b) {
+  a^2
+}
+f(2)
+```
+
+**function example 3**
+In this case you need to pass all the arguments when call a function
+```{r}
+f <- function(a, b) {
+  print(a)
+  print(b)
+}
+f(45,32)
+```
+
+**function example 4**
+
+it's like you are dividing(adding) by nothing this case all arguments are mandatory because you are using them
+```{r eval=F}
+f <- function(a, b) {
+  return(a+b)
+}
+f(3)
+#Error in f(3) : argument "b" is missing, with no default
+```
+
+**function example 5**
+
+```{r}
+
+f <- function(num) {
+  for(i in seq_len(num)) {
+    cat("Hello, world!\n")
+  }
+}
+f(3)
+```
+
+To run you own function, first you need to load in memory. Ways to load you function in memory:
+
+1. typed directly the function code on the keyboard in the R interpreter
+   or copy and paste them from an editor.
+   
+2. if the function has been saved in a text file, it can be loaded with source("FileName") (see ?source)
+
+```{r eval=F}
+source('src/nesting_function.R')
+```
+
+#### NESTED FUNCTION
+
+
+```{r eval=F}
+y <- 10
+f <- function(x) {
+  y <- 2
+  #print(y)
+  y^2 + g(x) #we are calling g inside f
+}
+f(3)
+#Error in g(x) : could not find function "g" 
+#You need to write (or load) the function g(x)
+
+```
+
+First you have to load the function g(x)
+```{r}
+g <- function(x) {
+  x * y
+}
+#f(3)
+# [1] 2 (print y)
+# [1] 34
+```
+
+
+
+# Another way to nest function but
+```{r}
+
+f <- function(x) {
+  y <- 2
+  g <- function(x) {
+    return(x * y)
+  }
+  y^2 + g(x)
+}
+f(3)
+#[1] 10
+```
+**Why this? **
+```{r}
+#** 
+#* because y = 10 is assigned, but to the global not inside
+#* the function variable
+#* With lexical scoping the value of y in the function g is looked
+#* up in the environment in which the function was defined, in
+#* this case the global environment, so the value of y is 10.
+#* 
+#* With dynamic scoping, the value of y is looked up in the
+#* environment from which the function was called (sometimes
+#* referred to as the calling environment).
+```
+**TO AVOID TROUBLE, DO NOT USE SAME NAMES FOR VARIABLES INSIDE AND OUTSIDE FUNCTION**
+
+#### RETURN in FUNCTIONS
+
+If there are no explicit returns from a function, the value of the last evaluated expression is returned automatically in R.
+
+
+#the return is the last expression evaluated
+```{r}
+check <- function(x) {
+  q <- 1
+  if (x > 0) {
+    result <- "Positive"
+  }
+  else if (x < 0) {
+    result <- "Negative"
+  }
+  else {
+    result <- "Zero"
+  }
+  (c((paste('the result is', result)),x))
+}
+check(1) 
+```
+
+But you can return anything you want and assign to a new R object
+```{r}
+check <- function(x) {
+  q <- 'this is the object q which is a text and first element of list'
+  if (x > 0) {
+    result <- "Positive"
+  }
+  else if (x < 0) {
+    result <- "Negative"
+  }
+  else {
+    result <- "Zero"
+  }
+  return(list(q,(c((paste('the result is', result)),x))))
+}
+returned_list <- check(1) 
+returned_list
+```
+
+A more complicated function with `for` and `if` conditions. 
+Write a function that find the maximum value of a vector (there is a built in function)
+```{r}
+find.max <- function(x)
+{
+  n <- length(x)  #to n is assigned the length of the vector x
+  x.m <- x[1]     #temporary assigns to this the first element
+  ix.m <- 1       #temporary assigns to this the index of the first element
+  
+  if(n > 1)       #if condition n>1 then any array must have at least two elements
+  {
+    for( i in seq(2,n,by=1) )  #loop over the sequence of the length of the vector by 1
+    {
+      if(x[i] > x.m)          #if condition of i^th element >= than x.m
+      {
+        x.m <- x[i]          #xm take the element i, update
+        ix.m <- i            #update also the index
+      }
+    }
+  }
+  else {
+    print('you are passing Nothing')
+  }
+  #return the maximum value and the index
+  return(c(x.m,ix.m)) #you return a vector of...
+}
+
+x <- runif(12)
+find.max(x)
+class(find.max(x))
+y <- array()
+find.max(y)
+```
+
+
+**Another nesting function example**
+
+```{r}
+#function which take the degree in F and convert into C
+ftoc <- function (f){
+  temp.c = ((f-32)*5)/9
+  return (temp.c)
+}
+ss=ftoc(32)
+ss
+#function which take the degree in C and convert into K
+
+ctok <- function (c){
+  temp.k = c + 273.15
+  return (temp.k)
+}
+
+#what if want to change directly from F to K?
+ctok(ftoc(160))
+```
+
+Function useful to solve quadratic equations
+
+```{r}
+quadraticRoots <- function(a, b, c) {
+  #print first a messages with a paste message
+  print(paste0("You have chosen the quadratic equation ", a, "x^2 + ", b, "x + ", c, "=0"))
+  #calculate the discriminants
+  discriminant <- (b^2) - (4*a*c)
+  #but first apply some rules
+  if(discriminant < 0) {
+    return(paste0("This quadratic equation has no real numbered roots."))
+  }
+  else if(discriminant > 0) {
+    x_int_plus <- (-b + sqrt(discriminant)) / (2*a)
+    x_int_neg <- (-b - sqrt(discriminant)) / (2*a)
+    #return the results
+    return(paste0("The two x-intercepts for the quadratic equation are ",
+                  format(round(x_int_plus, 5), nsmall = 5), " and ",
+                  format(round(x_int_neg, 5), nsmall = 5), "."))
+  }
+  #but what if remaining case... discriminant(DELTA) =0?
+  else #discriminant = 0  case
+    x_int <- (-b) / (2*a)
+  return(paste0("The quadratic equation has only one root. This root is ",
+                x_int))
+}
+quadraticRoots(2,3,-1)
+```
+
+
+
+## Functions to avoid loops
+These are `best` option to use to avoid loop (especially in dataframes operations)
+
+#### APPLY
+`Apply`, applies a function to sections of a data frame (and matrices) and returns the results in an array
+
+```{r}
+# Takes Data frame or matrix as first arguments, then apply the FUN (function) to the input and returns output in vector, list or array.
+
+dat1 <- airquality
+
+apply(X=airquality,MARGIN=2,FUN=mean)
+
+
+
+```
+
+`MARGIN assignment matrix 1 indicates rows, 2 indicates columns, c(1, 2) both rows and columns`
+
+
+Basically this is the same as:
+```{r}
+colMeans(airquality)
+colMeans(airquality,na.rm=TRUE)
+```
+
+
+
+
+## Reading/writing data I/O
+
+```{r}
+library (MASS)
+library (tidyverse)
+
+df <- sleep
+df
+```
+### Write to a file
+```{r eval=F}
+write.table(df,file="data/lab.txt",quote=FALSE,sep="\t",row.names=FALSE)  #col.names=TRUE
+
+#note the sep, this is a char which separate value by column, suggestion is to not use commas, use tab "\t" or semicolon instead 
+```
+
+### Read from a file
+```{r eval=F}
+
+args(read.delim)
+lab.data <- read.delim("data/lab.txt",header=TRUE, sep='\t') 
+##read.csv
+##read.delim
+lab.data
+```
+
+
+
+<!-- This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code.  -->
+
+<!-- Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*.  -->
+
+
+<!-- ```{r} -->
+<!-- plot(cars) -->
+<!-- ``` -->
+
+<!-- Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*. -->
+
+<!-- When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file). -->
+
+<!-- The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed. -->

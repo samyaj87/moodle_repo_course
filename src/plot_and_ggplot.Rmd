@@ -1,0 +1,339 @@
+---
+title: "Plotting with GGPLOT"
+author: "Dr. Samantha Ajovalasit"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## GGPLOT
+
+
+Before starting with ggplot here a list of basic plotting functions:
+
+##### plot(x)        basic x-y plot
+##### boxplot(x)     "Box and whiskers" plot
+##### hist(x)        Histogram of the frequencies of x
+##### barplot(x)     Histogram of the values of x
+
+```{r}
+rm(list=ls(all=T))
+library(ggplot2)
+library(dplyr)
+diamonds <- data.frame(ggplot2::diamonds)
+
+diamonds <- sample_n(diamonds, 10000,replace = F)  # we sampled with function sample_n of dplyr library 10000 out of 50000+ observations
+```
+
+Start with a simple plot of diamonds. The syntax for ggplots follow some rules, you have `aestetics` which is **something you see**. The aesthetics are axis, color, fill, linetype, shape,size etc, all variables/fields are passed here. Other object that you have in ggplot are `geometric` objects every function which starts with `geom_`. They can be bar, line, points, box plot etc. It is possible to add object with `+` operator 
+
+To plot in x and y axis. You don't need to `"quote"` the variable. Also you don't need to explicit x and y, first argument passed is x the second is y. 
+
+This plot just create the axis, note that we assing the plot to a particular variable p0
+```{r}
+p0 <- ggplot(diamonds, aes(x=carat, y=price))
+p0
+```
+
+Draw poins based on the two coordinates given by carat and price, note that we assign the plot with points to a new variable but we could also call the previous plot and add something to it. The plot "plotted" is p0+geom_point, but if you call p1 is basically the same plot
+```{r}
+p1 <- ggplot(diamonds, aes(x=carat, y=price)) + geom_point()
+p0 + geom_point()
+```
+
+
+On ggplot you can color what you are plotting by calling another variable (better if factor variable) in this case we are coloring by the cut type of the diamonds 
+```{r}
+p1 <- ggplot(diamonds, aes(x=carat, y=price, col=cut)) + geom_point()
+p1
+```
+
+You can also combine color and size of point we are keeping the color and adding a now format based on size assigned by variable price
+
+```{r}
+p2 <- ggplot(diamonds, aes(x=carat, y=price, col=cut)) + geom_point(aes(size=price))
+p2
+```
+
+### Saving
+Save the plot. Note that you can save the plot as pdf, tiff, png and so on. Remember that you need to set the name of the format you want to store the plot both as function and extension. 
+You can set width and the height, but also (depending on format), type of size (cm or pixel), resolution in dpi etc.
+
+```{r eval=F}
+png('myplot.png',width = 1920,height =1080,res = 100)
+p1
+dev.off()
+```
+
+**From now on I will not assign plot to a variable**
+
+
+We can change aestetics if we want to highlights the cut or another we would rather see how the quality of the color or cut of the diamond affects the price, we can change the aesthetic. 
+Here in "aes" we change "cut" to "color". 
+```{r}
+ggplot(diamonds, aes(x=carat, y=price, color=color)) + geom_point()
+```
+
+
+
+Now, what if we want to see the effect of both color and cut? We can use a fourth aesthetic, such as the size of the points. So here we have color representing the clarity. Let's add another aesthetic let's say "size=cut."
+
+```{r}
+ggplot(diamonds, aes(x=carat, y=price, color=clarity)) + geom_point(aes(size=cut,shape = color))
+```
+
+Now the size of every point is determined by the cut even while the color is still determined by the clarity. Similarly, we could use the shape to represent the cut:
+
+### Theme
+
+You can change the theme of the plot, for example to plot without the grey background type.
+```{r}
+ggplot(diamonds, aes(x=carat, y=price, color=clarity)) + geom_point(aes(size=cut,shape = color)) +theme_classic()
+```
+
+
+
+### Line plot 
+
+Instead of points we can draw a line which basically cross all the points
+```{r}
+ggplot(diamonds, aes(x=x, y=price, color=clarity)) + geom_line()
+```
+
+### Regression
+You can run regression directly on the fly on our dataset, for example we want to see it the length (x) and the width (y) are somewhat correlated (we expect that they are highly correlated)
+
+```{r}
+ggplot(diamonds, aes(x=x, y=y)) + geom_point() + geom_smooth(se=T)
+```
+
+Note that if you don't add argument to geom smooth by default you will have standard errors plotted and R will choose automatically the regression method from 'lm', 'loess', 'glm' see the help
+
+
+```{r eval=F}
+# This case we are using glm as method and we decide to not plot standard errors
+ggplot(diamonds, aes(x=carat, y=price)) + geom_point() + geom_smooth(se=FALSE, method="glm") 
+```
+
+
+If you used a color aesthetic, ggplot will create one smoothing curve for each color. For example, if we add "color=clarity":
+  
+```{r}
+ggplot(diamonds, aes(x=carat, y=price, color=clarity)) + 
+  geom_point() + geom_smooth(se=FALSE)
+```
+
+Now the output is telling you what is the method used and the formula applied to the model
+Use `method = ...` to change the smoothing method.
+
+
+### Faceting  
+
+It allows you to wraps many plot together based on a particular variable. 
+We add `facet_grid` and we put a tilde (~) `altgr+126` on `windows`, and then the attribute (variable) we would like to divide the plots by, here "clarity."
+Note that we could add the facet_grid to the plot p1 saved before
+
+```{r}
+ggplot(diamonds, aes(x=carat, y=price, color=clarity)) + 
+  geom_point() + theme_classic() + facet_grid(~ cut)
+```
+ 
+You can also facet yout plot for more than factor, for example we can split by color the clarity and then facetwrap by cut and color using the following syntax  The syntax in facet means that left (~) right, with tilde means "is explained by" 
+
+```{r}
+ggplot(diamonds, aes(x=price, y=carat, color=color)) + geom_point(aes(size=table))+
+  facet_grid(cut ~ clarity)+ theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5))
+```
+
+Now let's zoom in on this. We divided it into 56 subplots, (to many, it does not make sense in terms of analysis).
+In each plot we have on the axis two price and carat, colored by color of diamond, sized by table and the we divided by cut and clarity.
+More over to not overlap the xlabel we added a `theme` function of ggplot which rotates the label by a given angle ant adjust vertically and horizontally. (see section below)
+
+
+
+
+Use another dataset
+```{r}
+mpg <- (mtcars)
+mpg$carb <- as.factor(mpg$carb)
+mpg$cyl <- as.factor(mpg$cyl)
+ggplot(mpg, aes(disp, hp, color=carb)) +  geom_point() +
+  facet_grid(cyl~gear)
+```
+Note that for convenience we transformed `carb` and `cyl` as factor. If you do not transform a numerical variable as factor instead to have a color for each of value presents in the dataframe your color will be a gradient. 
+
+
+
+
+```{r}
+mpg <- (mtcars)
+mpg$carb <- as.factor(mpg$carb)
+mpg$cyl <- as.factor(mpg$cyl)
+ggplot(mpg, aes(disp, hp, color=gear)) +  geom_point() +
+  facet_grid(cyl~carb)
+```
+
+
+### Title and Label
+
+Add a title and a subtitle on a plot
+```{r}
+ggplot(diamonds, aes(x=x, y=z)) + geom_point() + ggtitle("My scatter plot",subtitle = 'subtitle of scatterplot')
+```
+
+Name the labels of the axis
+```{r}
+ggplot(diamonds, aes(x=carat, y=table)) + geom_point() + ggtitle("My scatter plot") + ylab('Width of top of diamond relative to widest point(43-95)')
+```
+
+You can also set limit on the axis with the `xlim` and `ylim`
+```{r}
+ggplot(diamonds, aes(x=x, y=y)) + geom_point() + 
+  ggtitle("My scatter plot") + xlab("length (mm)") + ylab("width (mm,)") + 
+  xlim(3, 6) + ylim(4,8)
+```
+Note that we received a warning, which says that due to axis delimitation part of observation cannot be plotted
+
+
+### Manipulation of data while plotting 
+
+We can do some simple manipulation on numerical data when we are drawing the plot without the need of create a new field or store in a new variable the result. 
+
+In this case we want to log of price
+```{r}
+ggplot(diamonds, aes(x=carat, y=log(price))) + geom_point() + ggtitle("My scatter plot") + xlab("Weight (carats)") + ylab('log (price)')
+```
+
+The above `y=log(price)` is basically the same of create a new variable based on this `diamonds$logprice <- log(diamonds$price)`
+
+However suggestion is not to use log directly, but apply a particular function of ggplot which scales keeping the axis values
+
+```{r}
+ggplot(diamonds, aes(x=carat, y=(price))) + geom_point() + ggtitle("My scatter plot") + xlab("Weight (carats)") + ylab('log (price)') + scale_y_log10()
+```
+
+
+### Histogram
+You can plot the histogram of just one variable at the time, eg x or y
+
+```{r}
+ggplot(diamonds, aes(x=price, group=cut)) + geom_histogram()
+```
+
+And change the bandwidth of each bin
+```{r}
+ggplot(diamonds, aes(x=price)) + geom_histogram(binwidth=2000)
+```
+
+```{r eval=F}
+ggplot(diamonds, aes(x=price)) + geom_histogram(binwidth=200)
+```
+
+You can also increase the number of bins
+```{r}
+ggplot(diamonds, aes(x=price, color=cut)) + geom_histogram(bins = 1000)
+```
+
+
+It is possible also color the bins by filling with the count of the price
+```{r}
+ggplot(diamonds, aes(x=price)) + geom_histogram(aes(fill=cut))
+```
+
+Also we can apply faceting to plot with histograms
+
+```{r}
+ggplot(diamonds, aes(x=price)) + geom_histogram(binwidth=10, aes(fill=clarity)) + facet_wrap(~ cut)
+```
+
+
+### Boxplot
+
+Schema of boxplot
+```{r}
+## B. BOXPLOT
+##
+##  outliers whisker      median         whisker
+##              |           |                |
+##              V           V                V
+##                  +-----------+
+##      o oo  |-----|       |   |------------|   ooo oo o
+##                  +-----------+
+##                 /\          /\
+##                 ||   (box)  ||
+##                1 q          3 q
+##
+## The hinges equal the quartiles for odd n (where n <- length(x)) and
+## differ for even n.
+```
+
+
+```{r}
+ggplot(diamonds, aes(x=cut, y=price)) + geom_boxplot()
+```
+
+#Plot the boxplot for cut type, and mark eventual outlier with red, this case you can pass manually the color, note that the two plot have two different scale.
+
+```{r}
+ggplot(diamonds, aes(x=cut, y=price)) + geom_boxplot(outlier.colour = 'red') + scale_y_log10()
+```
+
+### Violin Plot
+
+The width at each point in this violin plot represents the frequency of that price. So these bumps show the prices that are more common, and we can see that indeed  within some colors there 'is bimodality- there are multiple points that are common that a boxplot did not represent.
+```{r}
+ggplot(diamonds, aes(x=color, y=price)) + geom_violin() + scale_y_log10()
+```
+
+
+### Barplot
+
+Bar plots are common bar which allow to compare two variable instead of one (as in histogram)
+```{r}
+expenses <- data.frame(cost=c(350, 150, 100, 120, 140),
+                      descr=c("rent", "utilities", "fuel", "food", "leisure"))
+ggplot(data=expenses, aes(x=descr, y=cost)) +
+  geom_bar(stat="identity")
+```
+
+You can fill also barplot 
+```{r}
+ggplot(data=expenses, aes(x=descr, y=cost)) +
+  geom_bar(stat="identity", width=0.5)
+```
+
+And change width of the bar
+```{r}
+ggplot(data=expenses, aes(x=descr, y=cost)) +
+  geom_bar(stat="identity", width=0.5)
+```
+
+Or you can color bar 
+```{r}
+ggplot(diamonds, aes(x=carat, y=price)) +   #<--- see the dataset used
+  geom_bar(stat="identity", color="blue", fill="white")
+```
+
+
+Another color to fill the bar
+```{r}
+
+ggplot(data=expenses, aes(x=descr, y=cost)) +
+  geom_bar(stat="identity", fill="steelblue")+
+  theme_minimal()
+```
+
+You can add text here (and in any plot you want) with the function `geom_text`, you can as for the axis modify the label, the position adjustement, the color, and the size.
+
+```{r}
+ggplot(data=expenses, aes(x=descr, y=cost)) +
+  geom_bar(stat="identity", fill="steelblue")+
+  geom_text(aes(label=descr), vjust=1.6, color="white", size=3.5)+
+  theme_minimal()
+```
+
+
+
+

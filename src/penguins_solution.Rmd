@@ -1,0 +1,187 @@
+---
+title: "Penguins Exercise: Solutions"
+output: html_document
+author: Samantha Ajovalasit
+---
+
+
+## 1) Clean all data from your Global Environment
+```{r}
+remove(list = ls())
+```
+
+
+##  2) Get from the library(palmerpenguins) the penguins dataset. 
+
+Note that you may need to install the library
+
+##  3) Load library ggplot2, and type set.seed(1)
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(palmerpenguins)
+```
+
+## Set also the seed = 1 this is not needed here. 
+
+```{r}
+set.seed(1)
+```
+
+## 4) Load the dataset penguins ad a dataframe and name it
+```{r}
+peng <- (penguins)
+```
+
+Includes measurements for penguin species, island in Palmer Archipelago,
+size (flipper length, body mass, bill dimensions), and sex. 
+
+This is a subset of penguins_raw.
+
+##  5) Convert it as a standard data.frame
+
+Since it is a tibble (dataframe structure of tidyverse library) convert it  as a standard data.frame
+
+```{r}
+peng <- as.data.frame(peng)
+```
+
+## 6) rint all summary informations 
+
+(dimensions, type of data, structure etc.)
+
+```{r}
+head(peng,10)
+str(peng)
+summary(peng)
+nrow(peng)
+ncol(peng)
+names(peng)
+```
+
+### 6.1)format the year as factor
+```{r}
+peng$year <- as.factor(peng$year)
+```
+
+### 6.2) print the mean of the column bill_length_mm 
+```{r}
+mean(peng$bill_length_mm, na.omit=T)
+```
+Why do we have to use na.omit?
+
+## 7) Remove the NA rows from the dataset
+```{r}
+peng <- na.omit(peng)
+```
+
+### 8) Calculate the mean for male and female penguins of flipper length
+
+
+Long way
+
+```{r}
+male_peng <- subset(peng,sex=='male')
+female_peng <- subset(peng,sex=='female')
+
+mean(male_peng$flipper_length_mm)
+mean(female_peng$flipper_length_mm)
+```
+
+
+#second smarter way
+```{r}
+aggregate(.~sex, peng, mean)[6] 
+```
+#third smarter way
+```{r}
+tapply(peng$flipper_length_mm , peng$sex, mean) 
+```
+
+Or you can use also by()
+
+### 9) plot the histogram of the bill depth in mm and fill it by species
+```{r}
+ggplot(peng, aes(x = bill_depth_mm, fill = species)) +
+  geom_histogram(position='identity', alpha=0.5)+
+  ggtitle('Distribution for bill depth in mm')+
+  xlab('Bill Depth in mm')
+```
+
+
+### 10) plot the bar of the body mass and divide it by sex, choice an appropriate width
+```{r}
+ggplot(peng, aes(x = body_mass_g, fill=sex)) +
+  geom_bar(position='identity',width = 20)+
+  ggtitle('Distribution for bill depth in mm')+
+  xlab('Bill Depth in mm')
+```
+
+### 11)plot the bar of the species and bill length, fill the bar by sex
+```{r}
+ggplot(peng, aes(x = species, y=bill_length_mm, fill=sex)) +
+  geom_col(position='fill')+
+  ggtitle('Distribution for bill depth in mm')+
+  xlab('Bill Depth in mm')
+```
+This way you have that the bill length is filled in a scale from 0 to 1 and not in absolute values (to plot in absolute value just drop position from col)
+
+### 12) plot the points of bill lenght in x axis and bill dept in y axis, 
+#### color it by species and add shapes for island
+#### put the x axis label at 35 degrees
+```{r}
+ggplot(peng, aes(x = bill_length_mm, y=bill_depth_mm, color = species,shape=island)) +
+  geom_point()+ggtitle('Scatterplot of Bill length and depth in mm')+
+  theme(axis.text.x = element_text(angle = 35, vjust = .5 ))
+```
+
+What we can clearly see is that the Adele species is in all the Islands, while only chinstrap and gentoo are in Dream and Torgersen Island respectively. 
+
+
+
+#### 12.1) Now use a color scale gradient2 for the body mass, choose a color lower and high 
+                                            
+```{r}
+meanbody <- mean(peng$body_mass_g)
+
+ggplot(peng,aes(bill_length_mm, bill_depth_mm, color=body_mass_g,shape=sex))+ geom_point()+
+  scale_color_gradient2(midpoint=meanbody, low="blue",                        high="red")+ggtitle('Scatterplot of Bill length and depth in mm',subtitle = 'Divided by mass and sex')+
+  theme(axis.text.x = element_text(angle = 35, vjust = .5 ))
+
+```
+During the lecture we set the shape of body mass with a shape now we are doing the same with a gradient color 
+
+### 13) plot the boxplot of the body mass by sex and color it by island, 
+#### then facet by the species
+```{r}
+box.plot <- ggplot(peng, aes(x=sex, y=body_mass_g, color=island)) +
+  geom_boxplot()+facet_grid(~species)
+box.plot
+```
+
+#### 13.1) add points to the boxplot
+```{r}
+box.plot+ geom_jitter()
+```
+Set correct width and alpha arguments
+
+### 14) create a new factor variable called weight based on body mass of penguins where under the mean each sex is underweight and overweight
+
+```{r}
+male.weight <- mean(male_peng$body_mass_g)
+female.weight <- mean(female_peng$body_mass_g)
+
+peng$weight <- factor(ifelse(peng$body_mass_g <= male.weight & peng$sex=='male', 'underweight',
+                             ifelse(peng$body_mass_g > male.weight & peng$sex=='male' , 'overweight',
+                                    ifelse(peng$body_mass_g <= female.weight &peng$sex=='female','underweight', 'overweight')))) 
+
+```
+#### 14.1) then redo a box plot by chosing appropriate variables
+```{r}
+
+box.plot <- ggplot(peng, aes(x=weight, y=body_mass_g, color=sex)) +
+  geom_boxplot()+facet_grid(~species)
+box.plot
+```

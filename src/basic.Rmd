@@ -1,0 +1,1068 @@
+---
+title: "R Basic"
+output: html_document
+author: Dr. Samantha Ajovalasit
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## You can use `R` as a simple `Calculator`
+
+```{r}
+44+77
+102.5-88.8
+16*47
+1/5
+```
+
+
+When `R` is running, everything is stored in the active memory, with a name. You can see all the variables and value stored in the `Global Environment`.  
+
+
+To assign to an object a value use the assignment opertor "<-" or the =
+```{r}
+a <- 15
+a = 15
+```
+
+To print on the console the variable we can simply call `a` or use `print(a)`
+
+```{r}
+a
+```
+```{r}
+print(a)
+```
+
+R is *case sensitive* i.e.
+
+```{r}
+A <- (2+a)*5
+A
+```
+The two variables a and A are different
+```{r}
+a == A #check if both are equal 
+```
+`==` is the 
+To copy an object in R
+
+```{r}
+A
+B <- A #copy the object
+B
+A==B 
+```
+
+
+User can do actions on these objects with `OPERATORS` (arithmetic, logical, comparison) or `FUNCTIONS` (which are themselves objects)
+
+```{r}
+aA <- a+A
+```
+
+
+To run a function write it with parentheses
+```{r}
+b <- sqrt(a)
+b
+```
+
+A function can be executed event if you are not passing argument, i.e. default arguments are considered
+
+
+```{r eval=FALSE}
+vector() #function for listing objects in memory - executes the function
+#ls   #prints the function code
+```
+
+Note: object names can contain `.` or `_`
+```{r}
+my.value <- 5+a
+my_value <- 5+a
+```
+
+You CANNOT (seriously!!) use something like FALSE, TRUE, Inf, NA, NaN, NULL, function, etc... for naming objects. 
+
+You CANNOT naming object starting with numbers, but you can use numbers after letters
+
+```{r}
+#not
+#12value <- 21
+
+#yes
+value12 <- 21
+value12
+```
+
+
+Please, avoid also names like "c", "q" and "t": they can be re-assigned But this will create some problems in R
+
+#### **Save** your current workspace
+```{r}
+save.image("my.Rdata")  #saving all objects in memory (workspace                        #image) into a file on disk called my.Rdata (into the working directory)
+```
+
+`To quit the program (close both R and Rstudio) type. `
+
+```{r eval=F}
+q() 
+```
+
+You can choose to save the current workspace which will be open as is when you re-open Rstudio.
+
+#### **Load** a saved workspace
+
+```{r}
+load("my.Rdata")        
+#loading all objects previously saved into my.Rdata file (*)
+```
+
+If you want to know the directory where by default you are working use
+```{r}
+getwd() 
+#retrieving information about working directory: where the .RData file be saved
+```
+
+If you want to set another working directory type
+```{r, eval=F}
+setwd('the/path/of/the/new/workingdirectory')
+```
+
+
+##### Erase object
+
+```{r, }
+rm("A")   #erasing object A from workspace/memory (not from an .Rdata file)
+rm(list=ls()) # erase all objects from workspace
+```
+
+
+## How to use the HELP
+
+
+```{r }
+?ls        
+#provide access to documentation of the ls function         
+
+help("ls") #same as above
+```
+
+To show the arguments that function takes, type
+```{r}
+args(array)
+```
+
+Other useful helps to know
+```{r eval=F}
+help.search("normal") #! searching with keywords (alias, concept or title matching the keyword)
+
+apropos("norm")    #finds all functions which name contains the character sting given as argument
+
+help.start()     #loads help in html format (requires java)
+```
+
+
+on the web: here are some useful links
+
+http://cran.r-project.org/manuals.html
+#list of R manuals
+
+http://cran.r-project.org/other-docs.html              #Contributed Documentation (English)
+
+http://cran.r-project.org/doc/manuals/R-intro.html     
+#html R manual
+
+
+## Data types and data structures
+
+
+R Objects have type, mode, storage mode
+
+**TYPE OR MODE**
+ 
+###### There are 4 main modes: *numeric* 
+```{r}
+num <- 1
+num
+```
+*character*, 
+
+```{r}
+char <- "Double quotes \" delimitate R's strings."
+char
+s <- 'Double quotes"delimitate" R'
+s
+```
+*complex*
+```{r}
+comp.lex <- complex(real=3, imaginary=4)
+comp.lex
+```
+*logical* (TRUE/FALSE) 
+You can write `TRUE/FALSE` also with the initial upper case `T/G`
+```{r}
+a = T
+b = F
+```
+
+
+
+#### You can change type of R object from char to num and viceversa
+
+```{r}
+num <- 1:15
+is.numeric(char)
+num <- "3"
+class(num)
+as.numeric(num)
+```
+
+##### OR
+
+**NOTE**: if you want to mix char and num the result is a char
+```{r}
+typeof(c(4,4+1,'ciao'))
+```
+Char type
+```{r}
+char <- "Double quotes \" delimitate R's strings."
+is.character(char)
+char = 36
+char
+as.character(char)
+```
+
+##### Also this holds for Logical to char to numeric
+```{r}
+a <- TRUE
+is.logical(a)
+a <- "TRUE"
+is.logical(a) #FALSE
+a <- as.logical(a)
+is.logical(a)
+as.numeric(a)
+
+as.numeric(FALSE)
+
+```
+## Libraries and Load
+In R anyone can contribute with libraries dedicated in particular topic analysis. 
+There are Default libraries which can be loaded but also, depending on the analysis, you need to download and install from repository particular library
+
+Install a library
+```{r eval=F}
+install.packages('MASS') #always quote the library you want to install
+```
+
+Load an installed library
+```{r}
+library(MASS)
+
+
+#library(tlm) 
+#this is a not installed library it will give you an error: there is no package called 'tlm'
+```
+
+
+## Hieararchy of R type
+```{r}
+#hierarchy of R vectors type is 
+
+## VECTORS                   
+####################################
+#  ATOMIC VECTORS                  #
+#                                  #
+####################################
+#  #                   #          ##
+#  #  LOGICAL          #          ##
+#  #####################          ##
+#  #  NUMERIC          #          ##
+#  # ###|###############          ##
+#  #    |              #          ##
+#  # ###V###############          ##
+#  #  INTEGER          #          ##
+#  #  DOUBLE           #          ##
+#  #                   #          ##
+#  # ################# #          ##
+#  #                   #          ##
+#  #  CHARACTER        #          ##
+#  #                   #  LIST    ##
+#  #                   #          ##
+####################################
+
+```
+
+
+## 1) VECTORS
+
+`A vector is what a collection of cells with a fixed size where all cells hold the same type `
+`(integers or characters or complex or whatever).`
+
+`'Logical vector elements are initialized to FALSE, numeric vector elements to 0, 'character vector elements to "", raw vector elements to nul bytes and list/expression elements to NULL.`
+
+vectors are unidimensional
+
+Create different type of *blank* vectors
+```{r}
+#Integer
+a <- vector(mode='integer', length = c(10))
+a
+```
+
+```{r}
+#Character
+a <- vector(mode='character', length = c(10))
+a
+
+```
+
+```{r}
+#Complex
+a <- vector(mode='complex', length = c(10))
+a
+
+```
+
+```{r}
+#Logical
+a <- vector(mode='logical', length = c(10))
+a
+#Note that, by default R assigne FALSE to the logical vector we can modify a value from F to T by  
+a[9] <- T
+a
+# If we assign to a logical vector a number then the vector changes with 0=F and 1=T
+a[2] <- 21 
+a
+```
+
+#### Concatenation
+IMPORTANT: c() is used to concatenate many arguments (OF SAME TYPE) 
+
+
+```{r}
+# If you concatenate something like this, the result is a char vector
+a <- c('star',2,12,'star')
+a
+```
+
+##### A1. *numeric*
+
+```{r}
+x <- c(10.4, 5.6, 3.1, 6.4, 21.7) #concatenates objects in parenthesis
+length(x) 
+```
+
+
+Another way to define vectors is by creating a sequence
+
+```{r}
+x1 <- seq(from=1,to=5,by=0.4)
+x1
+```
+
+Another ways to do sequences are
+```{r}
+x1 <- seq(from=5,to=1,by=-1)
+x1
+x2 <- 1:10
+x2
+x3 <- 10:1
+x3
+x4 <- rep(x2, times=5)
+x4
+x5 <- rep(x2, each=5)
+x5
+```
+
+
+**Operations** between vectors are made element by element
+```{r}
+x1 + x2
+```
+
+CAUTION!!!: if vectors have different lengths, they may be
+recycled (longer vector needs to be multiple of longer one)
+
+```{r}
+XX <- c(x, x1)
+length(XX)
+Z <- (1:5)
+length(Z)
+
+XX+Z
+
+XX+10
+XX*5
+```
+
+#### Indexing
+
+##### Index vectors can be any of four distinct types:
+
+a. vector of positive integral quantities. 
+
+```{r}
+labs <- c(seq(1,10, by=1.5), 7:2, rep(3.7, 2))
+labs
+```
+
+Indexing by elements
+```{r}
+length(labs)
+labs[1]   #first element
+labs[1:4] #first two elements
+labs[c(1:2,5)] #element 1, 2, and 5 of the vector labs
+labs[13:16]   #adds an NA since labs has only 15 elements
+```
+
+b. negative indexing 
+```{r}
+labs[-5]           #all elements of labs but the 5th
+y <- labs[-(1:5)]  #all but the first five elements of labs
+y
+```
+
+c. logical vector indexing
+```{r}
+wq <- c(1:5,NA,7:9)
+wq
+lo <- wq[!is.na(wq)]
+lo
+!is.na(wq)
+tg <- wq[(!is.na(wq)) & wq>4]
+tg
+```
+
+Search inside vectors
+```{r}
+mn <- c(7, 14, 2, 8, 4.6)
+which(mn<5) #indexes corresponding to x < 5
+mn[which(mn<5)] #values of x < 5
+mn[mn<5]        #same result, but different way of indexing
+
+```
+
+
+d. vector of character strings.
+
+
+```{r}
+#ONLY applies where an object has a names attribute to identify its components
+fruit <- c(5, 10, 1, 20)
+names(fruit) <- c("orange", "banana", "apple", "peach")
+lunch <- fruit[c("apple","orange")]
+lunch
+
+##see dataframes!##
+```
+
+##### **VECTOR ARITHMETICS**
+```{r}
+inches <- c(69, 62, 66, 70, 70, 73, 67, 73, 67, 70)
+inches.s <- inches^2
+inches.swrt <- sqrt(inches.s)
+inches
+
+inchess <- (inches / inches.s) * 100000
+inchess
+```
+
+Note: **ARITMETIC OPERATORS**
+```{r eval=F}
+
+
+2+2   addition
+2+x2  addition (vectorized)
+x2+x2 addition (vectorized)
+
+2-2   subtraction
+2-x2  subtraction (vectorized)
+x2-x2 subtraction (vectorized)
+
+2*2   multiplication
+2*x2  multiplication (vectorized)
+x2*x2 multiplication (vectorized)
+
+2^2   power
+x2^x2 power (vectorized)
+
+6/4   division
+
+6%/%4 integer division
+
+6%%4  module
+```
+Note: **COMPARISON OPERATORS**
+
+```{r eval=F}
+
+*****************************
+6<8   less than
+x2<5  less than (vectorized)
+
+x2>5  greater than (vectorized)
+
+x2<=5  less than or equal to (vectorized)
+
+x2>=5  less than or equal to (vectorized)
+
+x2==5  equal (vectorized)
+
+x2!=5  different (vectorized)
+
+ other useful functions
+A <- sum(x1)
+A1 <- x1[1]+x1[2]+x1[3]+x1[4]+x1[5]
+A==A1
+
+y <- c(10, 30, 50, 20, 40) 
+order(y)     permutation rearranging y into ascending order: return idexes
+y[order(y,)]  equivalent to sort(y)
+sort(y)
+sort(y, decreasing=TRUE)
+```
+
+
+```{r eval=F}
+#3. logical
+#
+x5 <- c(FALSE,TRUE,FALSE,FALSE)
+x6 <- c(rep(T,2),rep(F,2))
+x7 <- x > 6
+
+
+```
+
+Note: **LOGICAL OPERATORS**
+
+```{r eval=F}
+!x5           #logical NOT
+x5 & x6       #logical AND (vectorized)
+x5 | x6       #logical OR (vectorized)
+```
+
+
+
+
+## 2) FACTOR
+
+Terms *category* and *enumerated type* are also used for factors.
+
+```{r}
+factor.example <- factor(c("high","medium","low","low","medium","high"))
+summary(factor.example)
+factor.example == factor(c(3,2,1,1,2,3),levels=3:1,labels=c("high","medium","low"))
+
+#change levels ordering
+factor.example <- factor(c("high","low","low","medium","high")) 
+levels(factor.example)
+```
+
+## 3) ARRAYS
+
+#An array is a vector which can have one, two or more dimensions. It is simply a vector which is stored with additional attributes giving the dimensions (attribute "dim") and optionally names for those dimensions (attribute "dimnames").
+```{r}
+b <- array(data=1, dim=c(2,2))
+b
+is.matrix(b)
+is.array(b)
+```
+
+```{r}
+b <- array(data=runif(100,-10,10), dim=c(3,5,2))
+b
+is.matrix(b) #False, is a multidimensional array
+is.array(b)  #True, is an array
+is.list(b)   #Is not a list (read the Hierarchy)
+
+b[1,2,2]     #Index a multidimensional array
+```
+
+
+## 4) LIST
+
+Almost all lists in R internally are Generic Vectorsm, but rarely seen by users (except as formals of functions).
+Lists can contain element of different types. 
+
+
+Create a list
+```{r}
+
+c <- list()
+d <-  vector("list", 5)
+is.list(c)
+
+is.list(d)
+```
+
+Create a list of two character and a vector
+```{r}
+c <- list("a", "b", 1:10)
+c
+
+length(c)
+```
+
+
+
+Think list as a combination of key (index of list or more...) and value (which can assume any type you want).
+
+```{r}
+# [[1]] <--- this is the name of the first element (key) of the list
+# [1] "a"  <--- this is the element (value) or the variable associated with the key [[1]]
+```
+
+Print the 2nd element of the list c
+```{r}
+c[[3]]
+```
+
+Index list by a vector
+```{r}
+c[c(1,3)]
+```
+
+
+Modify an element of a list
+```{r}
+c[[2]][1]  <-  "Z" 
+c
+```
+Above the now the `[[2]]` element of the list is a `Z`.
+
+
+Indexes of the list can be renamed
+```{r}
+names(c) <- c('alpha', 'beta', 'gamma')
+c
+```
+
+Above the now the `[[1]]` has been renamed with a char, you can also access directly 
+to the list element alpha with `$` operator
+```{r}
+
+c$alpha
+# same if
+c[['alpha']]
+
+```
+
+List allows to have different type for each elements:array, vector, data.frames, list 
+```{r}
+c <- list("a", "b", 1:10, list("d", "e", array(1,dim=c(2,2))))
+c
+```
+
+Rename the list's keys
+```{r}
+names(c) <- c('alpha', 'beta', 'gamma', 'list')
+c
+```
+
+Access to the first element of the sublist
+```{r}
+c$list[[1]]
+```
+
+Rename the list of list element
+
+```{r}
+names(c$list) <- c('delta','eta','kappa')
+c
+#access to list of sublist
+c$list$kappa
+```
+
+
+
+
+## 5) MATRICES
+
+
+Create a matrix
+```{r}
+##1)
+mat <- matrix(data=1:6, nrow=2,ncol=3)
+mat2 <- matrix(data=1:6, nrow=2,ncol=3, byrow=T)
+mat
+mat2
+```
+
+Another ways to create a matrix starting from vectors:
+```{r}
+##2)
+x <- 1:15
+dim(x)
+dim(x) <- c(5,3)
+x
+
+```
+
+
+##3)
+```{r}
+##rbind(): combine R objects (vectors) by rows
+##cbind()  combine R objects (vectors) by columns
+
+z <- seq(2,3,0.5)
+y <- 1:length(z)
+
+mat2 <- rbind(y,z)
+mat2
+```
+
+Check that `mat 2` a matrix:
+```{r}
+is.matrix(mat2) #TRUE
+class(mat2)
+```
+
+
+Matrix has attributes:
+```{r}
+mat <- matrix(data=rnorm(6), nrow=2,ncol=3)
+dim(mat)
+nrow(mat)
+ncol(mat)
+#You can set column names and row names for matrices
+colnames(mat) <- c("A","B","C")
+rownames(mat) <- c("r1","r2")
+mat
+```
+
+
+How to indexing matrices
+```{r}
+mat[1,]   #first row
+mat[,1]   #first column
+mat[,"A"] #column named A
+mat[2,"A"]#second elemnt of the A column
+mat["r2", c("A","C")] # row r2, elements A and C
+```
+
+Matrix Operation
+```{r}
+3*mat #Multiplication by a Scalar
+mat+mat2 #Matrix Addition 
+mat-mat2 #Matrix Subtraction
+m <- mat*mat2 #Multiplication element wise
+mat^2
+
+```
+
+Matrix can be transposed
+
+```{r}
+tmat <- t(mat) #Transpose of a Matrix
+tmat
+t(t(mat)) #transposition of transposition
+```
+
+
+Other functions you can apply on matrices:
+```{r}
+colSums(mat) #Computing Column Sums
+rowSums(mat)   #Computing Row Sums
+sum(mat) # sum of all elements
+range(mat) # min and max of all elements
+colMeans(mat) #Computing Column Means
+rowMeans(mat) #Computing Row Means
+```
+
+
+
+## 6) DATAFRAMES
+
+Load Dataframe from library MASS
+```{r}
+library(MASS)
+dat1 <- MASS::UScereal #load the dataframe UScereal and assign to variable dat1
+head(dat1,4) #the first 4 rows of the data frame
+```
+
+
+
+#### 6.1 dataframe has attributes:
+```{r}
+dim(dat1)
+nrow(dat1)
+ncol(dat1)
+names(dat1)
+rownames(dat1)[1:5]
+```
+
+#### 6.2 other useful attributes and functions:----
+```{r}
+str(dat1)      #dataframe structure
+summary(dat1)  #"summary" info per column, basically for continuos variable you have a written expression of boxplot
+```
+  
+
+#### 6.3 indexing dataframes:----
+```{r}
+dat1[1,]        #first row
+
+dat1[,1]        #first column
+
+dat1[[1]]       #first column #not used often
+```
+
+Access by column name
+```{r}
+
+#dat1[,"position"] #columnn named "position" (the first)
+#Error in `[.data.frame`(dat1, , "position") : undefined columns selected
+```
+
+Access by column name
+```{r}
+dat1[,"protein"] #columnn named "position" (the first)
+```
+
+Access with `$` operator
+
+```{r eval=F}
+dat1$carbo
+dat1$protein
+```
+
+Access to a specific value by row and col index
+```{r}
+dat1[2,3] #second element of the third column
+```
+
+Which is also
+```{r}
+dat1$protein[1]
+```
+
+
+#### 6.4 select a subset of the dataframe
+```{r}
+
+dat2 <- subset.data.frame(dat1,select = c('vitamins', 'fat', 'protein'))
+
+#or
+dat2 <- subset(dat1,select = c('vitamins', 'fat', 'protein'))
+head(dat2,2)
+
+```
+
+
+#### 6.5 Search on dataframe 
+
+```{r eval=F}
+dat1[dat1$vitamins=='enriched',] ##all rows of the dataframe having "enriched" vitamins
+
+dat1[dat1$vitamins=='enriched',1] ##all "mfr" element having "enriched" vitamins
+
+dat1[dat1$vitamins=='enriched','fat'] ##all "fat" element having "enriched" vitamins
+```
+
+You can assign the above to a new dataframe
+
+```{r}
+dat.enr <- dat1[dat1$vitamins=='enriched',c('fat','carbo')] ##all "fat" and "carbo" element having "enriched" vitamins
+head(dat.enr,3)
+```
+
+##### 6.6 more search in dataframe
+```{r}
+dat1[dat1$vitamins=="enriched","shelf"] #--> return the value of the column shelf
+```
+
+```{r}
+sum(dat1[dat1$mfr=="K","potassium"])#--> return the mean of the column potassium where the mfr are K
+```
+
+
+
+#### 7 DataFrame Manipulation
+`dat1`has row names, which are brands of cereals, suppose we we want assign these row names to a value set
+
+```{r}
+dat1$brands <- rownames(dat1)
+ #delete the rownames of our dataframe (since now is a value)
+rownames(dat1) <- NULL
+str(dat1)
+```
+
+```{r}
+#question: do we need brands as factor?
+```
+
+
+Combine two columns into a new one
+```{r}
+dat1$sodiumplusprotein <- dat1$sodium + dat1$protein
+dat1$sodium.minus.protein <- dat1$sodium - dat1$protein
+dat1$'2003' <- dat1$sodium*dat1$protein
+
+head(dat1,3)
+```
+
+
+Sorting
+```{r}
+calories_sorted <- sort(dat1$calories)
+```
+
+Sort all the dataframe by particular value
+
+```{r}
+#again you can reassign the dataframe to a new variable or same variable
+dat1_sorted <- dat1[order(dat1$protein,decreasing = T),]
+head(dat1_sorted,2)
+```
+
+
+
+
+Remove/Drop row/column from dataframe
+
+```{r}
+dim(dat1)
+dat1 <- dat1[-54,] #remove 54th row
+dim(dat1)
+
+dat1 <- dat1[,-4]  #remove 4th column
+dim(dat1)
+```
+
+
+Create a copy of the column
+```{r}
+dat1$protein.2 <- dat1$protein
+dat1$protein.3 <- dat1$protein
+names(dat1)
+#delete particular column
+dat1$protein.2 <- NULL
+dat1$protein.3 <- NULL
+names(dat1)
+```
+
+
+Remove a column by name of column
+
+```{r eval =F }
+#or
+dat1 <- subset(dat1, select = -protein.2 )
+
+#or tou can draw many columns 
+dat1 <- subset(dat1, select = -c(protein.2,protein.3))
+```
+
+
+Dealing with NAN values
+```{r}
+dat1$sodium.times.protein <- dat1$sodium * dat1$protein
+dat1$sodium.times.protein
+dat1$sodium.times.protein[2:4] <- NA
+
+is.na(dat1$sodium.times.protein)
+```
+Note the `TRUE` at `2, 3, 4` index of output
+
+You can substitute the value with `0`. 
+
+```{r}
+dat1$sodium.times.protein[is.na(dat1$sodium.times.protein)] <- 0
+dat1$sodium.times.protein
+
+```
+Note: you can subs with `0` but this is reasonable only if you assume that these NA value can be substituted with 0, otherwise you can impute the value for example from the mean 
+
+
+```{r}
+dat1$sodium.times.protein[2:4] <- NA #reset the NA value for 2,3,4 index of column
+dat1$sodium.times.protein[is.na(dat1$sodium.times.protein)] <- mean(dat1$sodium.times.protein[!is.na(dat1$sodium.times.protein)])
+
+dat1$sodium.times.protein
+```
+Now we substituted the mean `937.2353` to the NA value.
+
+Note f we have to many NA value for example for one observation (think that one of the cereal's brand has NA for most of the columns), you can drop all row containing one(more) missing value. Also you can drop a column if there are to much NA.
+
+Last option
+
+```{r eval=F}
+na.omit(dat1)
+```
+
+
+###### Default datasets you can use to exercise
+```{r eval=F}
+data()         #lists all available example datasets
+
+data(airquality)
+?airquality
+summary(airquality)
+summary(iris)
+```
+
+
+
+#### 7 Create Dataframe from vector----
+
+You can create also data frame from a series of vector
+
+```{r}
+v1 <- runif(10,2,10)
+v2 <- seq(1,100, by=10 )
+v3 <- c('a', 'b','c', 'd','e', 'f','g', 'h','i', 'k')
+
+
+my.data.frame <- data.frame('randomuni'=v1, 'mysequence'=v2, 'mychar'=v3)
+my.data.frame
+str(my.data.frame)
+```
+
+
+
+#### Basic Statistical Functions
+```{r eval=F}
+# basic statistical functions
+x1 <- rnorm(100) # sample 100 elements from a normal distribution with
+                 # mu=0 and sigma=1
+summary(x1) 
+mean(x1)
+median(x1)
+min(x1)
+max(x1)
+range(x1)
+sd(x1)
+var(x1)
+quantile(x1, probs = c(0.43, 0.5))
+ Note:
+ The 2-quantile is called the median.
+ The 4-quantiles are called quartiles: probs = seq(0, 1, 0.25)
+quantile(x1, probs = c(0.16, 0.81, 0.95))
+
+
+x1[2] <- NA # Handling missing values
+summary(x1) 
+mean(x1) #NA
+mean(x1,na.rm=T)
+#the same holds for median(), min(), max(), range(), sd(), var(), quantile()
+
+```
+
+
+
+<!-- ```{r cars} -->
+<!-- summary(cars) -->
+<!-- ``` -->
+
+<!--  Including Plots -->
+
+<!-- You can also embed plots, for example: -->
+
+<!-- ```{r pressure, echo=FALSE} -->
+<!-- plot(pressure) -->
+<!-- ``` -->
+
+<!-- Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot. -->
+

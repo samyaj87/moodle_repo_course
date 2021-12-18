@@ -1,0 +1,54 @@
+PRACTICE
+
+Author: Samantha Riccadonna
+14.02.2012
+
+credits: Giorgio Guzzetta
+
+data downloaded from the UCI repository
+http://archive.ics.uci.edu/ml/datasets/Contraceptive+Method+Choice
+ 
+Data Set Information: 
+This dataset is a subset of the 1987 National Indonesia Contraceptive
+Prevalence Survey.  The samples are married women who were either not
+pregnant or do not know if they were at the time of interview.  The
+problem is to predict the current contraceptive method choice (no use,
+long-term methods, or short-term methods) of a woman based on her
+demographic and socio-economic characteristics.
+ 
+Attributes Information:
+   
+ 1. Wife's age (wAGE,numerical)
+ 2. Wife's education (wEDU,categorical) 1=low, 2, 3, 4=high
+ 3. Husband's education (hEDU,categorical) 1=low, 2, 3, 4=high
+ 4. Number of children ever born (CHD,numerical)
+ 5. Wife's religion (wREL,binary) 0=Non-Islam, 1=Islam
+ 6. Wife's now working? (wWORK,binary) 0=Yes, 1=No
+ 7. Husband's occupation (hWORK,categorical) [1=manager, 2=public
+    servant, 3=physician, 4=engineer]
+ 8. Standard-of-living index (SOL,categorical) 1=low, 2, 3, 4=high
+ 9. Media exposure (MEDIA,binary) 0=Good, 1=Not good
+ 10. Contraceptive method used (CMET,class attribute) 1=No-use,
+     2=Long-term, 3=Short-term
+
+----------------------------------------
+
+A. Read data from file cmc.data.txt, store them in a variable (e.g.,
+'mydata') and verify variable class, structure, and summary.
+
+B. Name the columns according to instructions above and transform
+categorical values into factors. Verify the new structure.
+
+C. Add a column called "ID" and containing a sequential index. Verify
+the structure of the updated variable.
+
+D. Visualize the third observation of attribute "wEDU" and the fifth
+observation of attribute "CHD". Modify both entries by assigning a
+value NA.
+
+E. Visualize all observations of attribute "wAGE". Assign the results
+to a new variable called AGE.
+
+F. Calculate how many values of AGE are higher than 35. Visualize the
+whole dataset (mydata) only for subjects with AGE > 35 and no
+children.
